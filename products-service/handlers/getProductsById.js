@@ -1,37 +1,43 @@
-import { productsMock } from '../__mocks__/productsAPI.js';
+import { productsMock } from '../__mocks__/products.mock.js';
 
-export const getProductsById = async (event) => {
-    const { productId } = event.pathParameters;
-    const products = productsMock;
+export const getProductsById = async event => {
+  const { productId } = event.pathParameters;
+  const products = await productsMock;
 
-    let response = {};
-    let responseStatusCode = '';
-    let responseBody = '';
-    let product = {};
+  const defaultHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Credentials': true,
+    'content-type': 'application/json'
+  };
 
-    product = products.find((product) => product.id === productId);
+  let response = {};
+  let responseStatusCode = '';
+  let responseBody = '';
+  let product = {};
+
+  try {
+    product = products.find(product => product.id === productId);
 
     if (product) {
-        responseStatusCode = 200;
-        responseBody = JSON.stringify(product);
-        console.log('Product found: ', product);
+      responseStatusCode = 200;
+      responseBody = JSON.stringify(product);
     } else {
-        responseStatusCode = 422;
-        responseBody = `Product with the id [ ${productId} ] not found`;
-        console.log(`Product with the id [ ${productId} ] not found`);
+      responseStatusCode = 422;
+      responseBody = `Product with the id [ ${productId} ] not found`;
     }
-   
-    response = {
-        statusCode: responseStatusCode,
-        headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': true,
-            'content-type': 'application/json'
-        },
-        body: responseBody
+  } catch (error) {
+    return response = {
+      statusCode: 500,
+      headers: defaultHeaders,
+      body: JSON.stringify({ message: `Internal server error: ${error}` })
     };
-    
-    return response;
+  }
+
+  return response = {
+    statusCode: responseStatusCode,
+    headers: defaultHeaders,
+    body: responseBody
+  };
 };
 
 export default getProductsById;

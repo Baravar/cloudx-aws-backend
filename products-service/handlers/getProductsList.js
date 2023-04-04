@@ -1,19 +1,30 @@
-import { productsMock } from '../__mocks__/productsAPI.js';
+import { productsMock } from '../__mocks__/products.mock.js';
 
 export const getProductsList = async () => {
-    let response = {};
+  const defaultHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Credentials': true,
+    'content-type': 'application/json'
+  };
 
-    response = {
-        statusCode: 200,
-        headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': true,
-            'content-type': 'application/json'
-        },
-        body: JSON.stringify({products: productsMock})
+  let response = {};
+  let data = {};
+
+  try {
+    data = await productsMock;
+  } catch (error) {
+    return response = {
+      statusCode: 500,
+      headers: defaultHeaders,
+      body: JSON.stringify({ message: `Internal server error: ${error}` })
     };
-    
-    return response;
+  }
+
+  return response = {
+    statusCode: 200,
+    headers: defaultHeaders,
+    body: JSON.stringify(data)
+  };
 };
 
 export default getProductsList;
