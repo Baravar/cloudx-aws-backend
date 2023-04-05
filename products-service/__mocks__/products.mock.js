@@ -1,4 +1,4 @@
-export const productsMock = [
+export const productsMock = new Promise((resolve) => resolve([
   {
     count: 4,
     size: [],
@@ -39,4 +39,4 @@ export const productsMock = [
     image:
       'https://cf.ijersey.ru/upload/ttmall/img/20221223/c183dcf922d37aa92eabe3a4516928a7.png=z-0,0_f-webp'
   }
-];
+]));
