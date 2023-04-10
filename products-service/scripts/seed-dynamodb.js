@@ -1,11 +1,10 @@
 import putItem from '../services/dynamodb/ddb-method-put-item.js';
 import { productsMock } from '../__mocks__/products.mock.js';
-import { dynamoDbTables } from '../constants/product-service.constants.js'
 import { v4 as uuidv4 } from 'uuid';
 
 (async () => {
-  const PRODUCTS_DB = dynamoDbTables.products;
-  const STOCKS_DB = dynamoDbTables.stocks;
+  const PRODUCTS_DB = process.env.PRODUCTS_DB_NAME;
+  const STOCKS_DB = process.env.STOCKS_DB_NAME;
   const products = await productsMock;
 
   products.forEach(mockItem => {

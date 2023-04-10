@@ -12,6 +12,30 @@ provider:
   region: us-east-1
   httpApi:
     cors: true
+  environment:
+    PRODUCTS_DB_NAME: ${self:custom.PRODUCTS_DB_NAME.${self:custom.stage}}
+    STOCKS_DB_NAME: ${self:custom.STOCKS_DB_NAME.${self:custom.stage}}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action: 
+            - 'dynamodb:Scan'
+            - 'dynamodb:Query'
+          Resource: 'arn:aws:dynamodb:us-east-1:261414472581:table/${self:provider.environment.PRODUCTS_DB_NAME}'
+        # Allow functions to read/write objects in a bucket
+        - Effect: Allow
+          Action: 
+            - 'dynamodb:Scan'
+            - 'dynamodb:Query'
+          Resource: 'arn:aws:dynamodb:us-east-1:261414472581:table/${self:provider.environment.STOCKS_DB_NAME}'
+
+custom:
+  stage: ${opt:stage, self:provider.stage}
+  PRODUCTS_DB_NAME:
+    dev: ${ssm(us-east-1):/dev/PRODUCTS_DB_NAME}
+  STOCKS_DB_NAME:
+    dev: ${ssm(us-east-1):/dev/STOCKS_DB_NAME}
 
 functions:
   getProducts:
