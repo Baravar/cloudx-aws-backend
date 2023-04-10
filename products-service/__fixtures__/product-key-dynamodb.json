@@ -1,0 +1,10 @@
+{
+  "id": { "S": "7567ec4b-b10c-48c5-9345-fc73c48a80a0" },
+  "title": { "S": "FC Barcelona - Home Kit 22-23" },
+  "description": { "S": "Away jersey" },
+  "image": {
+    "S": "https://down-my.img.susercontent.com/file/sg-11134201-23020-zczs0z6pxcnv88"
+  },
+  "price": { "N": "97.5" },
+  "size": { "L": [{ "S": "M" }, { "S": "L" }] }
+}
