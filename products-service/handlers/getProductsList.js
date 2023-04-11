@@ -1,6 +1,8 @@
 import { getAllProducts } from '../services/dynamodb/products-data.service.js'
 
-export const getProductsList = async () => {
+export const getProductsList = async event => {
+  console.log(event);
+
   const defaultHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Credentials': true,

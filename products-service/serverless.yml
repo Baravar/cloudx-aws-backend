@@ -22,12 +22,14 @@ provider:
           Action: 
             - 'dynamodb:Scan'
             - 'dynamodb:Query'
+            - 'dynamodb:PutItem'
           Resource: 'arn:aws:dynamodb:us-east-1:261414472581:table/${self:provider.environment.PRODUCTS_DB_NAME}'
         # Allow functions to read/write objects in a bucket
         - Effect: Allow
           Action: 
             - 'dynamodb:Scan'
             - 'dynamodb:Query'
+            - 'dynamodb:PutItem'
           Resource: 'arn:aws:dynamodb:us-east-1:261414472581:table/${self:provider.environment.STOCKS_DB_NAME}'
 
 custom:
@@ -50,3 +52,9 @@ functions:
       - httpApi:
           method: GET
           path: /products/{productId}
+  createProduct:
+    handler: handler.createProduct
+    events:
+      - httpApi:
+          method: POST
+          path: /products

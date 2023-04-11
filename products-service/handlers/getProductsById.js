@@ -1,6 +1,8 @@
 import { getProductItem } from '../services/dynamodb/products-data.service.js';
 
 export const getProductsById = async event => {
+  console.log(event);
+
   const { productId } = event.pathParameters;
 
   const defaultHeaders = {
@@ -10,14 +12,13 @@ export const getProductsById = async event => {
   };
 
   let response = {};
-  let responseStatusCode = '';
+  let responseStatusCode = 200;
   let responseBody = '';
 
   try {
     const product = await getProductItem(productId);
 
     if (product) {
-      responseStatusCode = 200;
       responseBody = JSON.stringify(product);
     } else {
       responseStatusCode = 422;
