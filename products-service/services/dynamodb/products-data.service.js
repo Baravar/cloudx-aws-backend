@@ -71,26 +71,12 @@ export const getProductItem = async (productId) => {
 };
 
 export const getAllProducts = async () => {
-   let products = await scanTable(scanProductsParams);
-   let productsStock = await scanTable(scanStocksParams);
+  let products = await scanTable(scanProductsParams);
+  let productsStock = await scanTable(scanStocksParams);
    
-   const productsData = Promise.all([products, productsStock]).then(data => {
-     let products = data[0];
-     let productStock = data[1];
-     let joinedProductsInfo = [];
-
-     products.forEach(product => {
-       let productItem = product;
-
-       productItem.count = productStock.filter(
-         productStockItem => productStockItem.product_id === product.id
-       )[0].count;
-
-       joinedProductsInfo.push(productItem);
-     });
-
-     return joinedProductsInfo;
-   });
-
-   return productsData;
+  return products.map(product => {
+    const productCount =
+      productsStock.find(p => p.product_id === product.id)?.count ?? 0;
+    return { ...product, count: productCount };
+  });
 }
