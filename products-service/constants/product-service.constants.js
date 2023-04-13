@@ -1,0 +1,1 @@
+export const dynamoDbRegion = 'us-east-1';

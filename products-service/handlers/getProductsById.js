@@ -1,8 +1,9 @@
-import { productsMock } from '../__mocks__/products.mock.js';
+import { getProductItem } from '../services/dynamodb/products-data.service.js';
 
 export const getProductsById = async event => {
+  console.log(event);
+
   const { productId } = event.pathParameters;
-  const products = await productsMock;
 
   const defaultHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -11,15 +12,13 @@ export const getProductsById = async event => {
   };
 
   let response = {};
-  let responseStatusCode = '';
+  let responseStatusCode = 200;
   let responseBody = '';
-  let product = {};
 
   try {
-    product = products.find(product => product.id === productId);
+    const product = await getProductItem(productId);
 
     if (product) {
-      responseStatusCode = 200;
       responseBody = JSON.stringify(product);
     } else {
       responseStatusCode = 422;

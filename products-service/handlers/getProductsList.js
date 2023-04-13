@@ -1,6 +1,8 @@
-import { productsMock } from '../__mocks__/products.mock.js';
+import { getAllProducts } from '../services/dynamodb/products-data.service.js'
 
-export const getProductsList = async () => {
+export const getProductsList = async event => {
+  console.log(event);
+
   const defaultHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Credentials': true,
@@ -8,10 +10,10 @@ export const getProductsList = async () => {
   };
 
   let response = {};
-  let data = {};
+  let productsData = {};
 
   try {
-    data = await productsMock;
+    productsData = await getAllProducts();;
   } catch (error) {
     return response = {
       statusCode: 500,
@@ -20,11 +22,11 @@ export const getProductsList = async () => {
     };
   }
 
-  return response = {
+  return (response = {
     statusCode: 200,
     headers: defaultHeaders,
-    body: JSON.stringify(data)
-  };
+    body: JSON.stringify(productsData)
+  });
 };
 
 export default getProductsList;
