@@ -5,6 +5,8 @@ export const processProductsFile = async event => {
   console.log(event);
 
   const filePath = event.Records[0].s3.object.key;
+  console.log('File path:', filePath);
+
   const results = [];
 
   const bucketName = 'ng-store-file-import';
@@ -33,19 +35,37 @@ export const processProductsFile = async event => {
 
   const fileToProcess = await client.send(getCommand);
 
-  fileToProcess.Body.pipe(csvParser())
-    .on('data', data => {
-      results.push(data);
-    })
-    .on('end', async () => {
-      console.log('CSV pasring stream ended: ', results);
+  const processItem = fileToProcess => {
+    return new Promise( resolve => {
+      fileToProcess.Body.pipe(csvParser())
+        .on('data', data => {
+          results.push(data);
+        })
+        .on('end', async () => {
+          await client.send(copyCommand)
+            .then(() => {
+              console.log('File copied to /parsed directory');
+            })
+            .catch(e => {
+              console.log('File copy failed: ', e);
+            });
 
-      const copyResult = await client.send(copyCommand);
-      console.log('File copied: ', copyResult);
+          await client
+            .send(deleteCommand)
+            .then(() => {
+              console.log('File deleted from /uploaded directory');
+            })
+            .catch(e => {
+              console.log('File delete failed: ', e);
+            });
 
-      const deleteResult = await client.send(deleteCommand);
-      console.log('File removed: ', deleteResult);
+          console.log('CSV parsing stream ended: ', results);
+          resolve();
+        });
     });
+  };
+
+  return Promise.all([processItem(fileToProcess)]);
 };
 
 export default processProductsFile;
