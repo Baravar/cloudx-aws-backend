@@ -47,7 +47,7 @@ export const processProductsFile = async event => {
               console.log('File copied to /parsed directory');
             })
             .catch(e => {
-              console.log('File copy failed: ', e);
+              console.log('File copy failed.', e);
             });
 
           await client
@@ -56,7 +56,7 @@ export const processProductsFile = async event => {
               console.log('File deleted from /uploaded directory');
             })
             .catch(e => {
-              console.log('File delete failed: ', e);
+              console.log('File delete failed.', e);
             });
 
           console.log('CSV parsing stream ended: ', results);
