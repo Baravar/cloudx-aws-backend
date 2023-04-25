@@ -3,7 +3,15 @@ frameworkVersion: '3'
 
 # Add the serverless-webpack plugin
 plugins:
+  - serverless-lift
   - serverless-webpack
+
+constructs:
+  catalogItemsQueue:
+    type: queue
+    batchSize: 5 
+    worker:
+      handler: handler.catalogBatchProcess
 
 provider:
   name: aws
@@ -15,6 +23,7 @@ provider:
   environment:
     PRODUCTS_DB_NAME: ${self:custom.PRODUCTS_DB_NAME.${self:custom.stage}}
     STOCKS_DB_NAME: ${self:custom.STOCKS_DB_NAME.${self:custom.stage}}
+    QUEUE_URL: ${construct:catalogItemsQueue.queueUrl}
   iam:
     role:
       statements:
@@ -40,11 +49,11 @@ custom:
     dev: ${ssm(us-east-1):/dev/STOCKS_DB_NAME}
 
 functions:
-  getProducts:
-    handler: handler.getProductsList
+  createProduct:
+    handler: handler.createProduct
     events:
       - httpApi:
-          method: GET
+          method: POST
           path: /products
   getProductsById:
     handler: handler.getProductsById
@@ -52,9 +61,9 @@ functions:
       - httpApi:
           method: GET
           path: /products/{productId}
-  createProduct:
-    handler: handler.createProduct
+  getProducts:
+    handler: handler.getProductsList
     events:
       - httpApi:
-          method: POST
+          method: GET
           path: /products
