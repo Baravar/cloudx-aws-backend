@@ -6,6 +6,7 @@ plugins:
   - serverless-lift
   - serverless-webpack
 
+# used by serverless-lift to setup SQS using Cloudformation
 constructs:
   catalogItemsQueue:
     type: queue
@@ -24,6 +25,8 @@ provider:
     PRODUCTS_DB_NAME: ${self:custom.PRODUCTS_DB_NAME.${self:custom.stage}}
     STOCKS_DB_NAME: ${self:custom.STOCKS_DB_NAME.${self:custom.stage}}
     QUEUE_URL: ${construct:catalogItemsQueue.queueUrl}
+    SNS_ARN: 
+      Ref: SNSTopic
   iam:
     role:
       statements:
@@ -40,6 +43,10 @@ provider:
             - 'dynamodb:Query'
             - 'dynamodb:PutItem'
           Resource: 'arn:aws:dynamodb:us-east-1:261414472581:table/${self:provider.environment.STOCKS_DB_NAME}'
+        - Effect: Allow
+          Action: 'sns:*'
+          Resource: 
+            Ref: SNSTopic
 
 custom:
   stage: ${opt:stage, self:provider.stage}
@@ -67,3 +74,18 @@ functions:
       - httpApi:
           method: GET
           path: /products
+
+resources:
+  Resources:
+    SNSTopic:
+        Type: AWS::SNS::Topic
+        Properties:
+          DisplayName: 'Captures event of created products'
+          TopicName: createProductTopic
+    SNSSubscription:
+        Type: AWS::SNS::Subscription
+        Properties:
+          Endpoint: artsiom_baravik@epam.com
+          Protocol: email
+          TopicArn: 
+            Ref: SNSTopic
