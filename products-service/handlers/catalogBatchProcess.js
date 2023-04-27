@@ -13,8 +13,19 @@ export const catalogBatchProcess = async event => {
     const params = {
       Subject: 'New Products have been added to the Store DB',
       Message: record.body,
+      MessageAttributes: {
+        'notify': {
+          'DataType': 'String',
+          'StringValue': 'false'
+        }
+      },
       TopicArn: TOPIC_ARN
     };
+
+    // Apply filtering for SNS Subscription based on message attribute defined in serverless.yaml
+    if (JSON.parse(record.body).description === 'Away jersey') {
+      params.MessageAttributes.notify.StringValue = 'true';
+    }
 
     processingPromises.push(new Promise(async resolve => {
       try {

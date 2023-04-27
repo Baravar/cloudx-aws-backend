@@ -87,5 +87,9 @@ resources:
         Properties:
           Endpoint: artsiom_baravik@epam.com
           Protocol: email
+          FilterPolicyScope: MessageAttributes
+          FilterPolicy:
+            notify: 
+              - 'true' 
           TopicArn: 
             Ref: SNSTopic
