@@ -10,7 +10,7 @@ plugins:
 constructs:
   catalogItemsQueue:
     type: queue
-    batchSize: 5 
+    batchSize: 5
     worker:
       handler: handler.catalogBatchProcess
 
@@ -89,7 +89,18 @@ resources:
           Protocol: email
           FilterPolicyScope: MessageAttributes
           FilterPolicy:
-            notify: 
-              - 'true' 
-          TopicArn: 
+            notify:
+              - 'true'
+          TopicArn:
             Ref: SNSTopic
+    SNSSubscription2:
+            Type: AWS::SNS::Subscription
+            Properties:
+              Endpoint: artem.borovik.by@gmail.com
+              Protocol: email
+              FilterPolicyScope: MessageAttributes
+              FilterPolicy:
+                notify:
+                  - 'false'
+              TopicArn:
+                Ref: SNSTopic

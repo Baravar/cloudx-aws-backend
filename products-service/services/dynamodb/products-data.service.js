@@ -59,7 +59,7 @@ export const getProductItem = async (productId) => {
     if (productData.Items[0] && stockData.Items[0]) {
       productInfo = productData.Items[0];
       productInfo.count = stockData.Items[0].count;
-      
+
       return productInfo;
     } else {
       return null;
