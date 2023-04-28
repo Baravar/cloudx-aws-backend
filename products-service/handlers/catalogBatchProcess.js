@@ -81,7 +81,7 @@ export const catalogBatchProcess = async event => {
 
   return Promise.all(processingPromises).then(values => {
     console.log('Processed SNS events: ', values);
-  });;
+  });
 };
 
 export default catalogBatchProcess;
