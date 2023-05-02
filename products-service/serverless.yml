@@ -3,7 +3,16 @@ frameworkVersion: '3'
 
 # Add the serverless-webpack plugin
 plugins:
+  - serverless-lift
   - serverless-webpack
+
+# used by serverless-lift to setup SQS using Cloudformation
+constructs:
+  catalogItemsQueue:
+    type: queue
+    batchSize: 5
+    worker:
+      handler: handler.catalogBatchProcess
 
 provider:
   name: aws
@@ -15,6 +24,9 @@ provider:
   environment:
     PRODUCTS_DB_NAME: ${self:custom.PRODUCTS_DB_NAME.${self:custom.stage}}
     STOCKS_DB_NAME: ${self:custom.STOCKS_DB_NAME.${self:custom.stage}}
+    QUEUE_URL: ${construct:catalogItemsQueue.queueUrl}
+    SNS_ARN: 
+      Ref: SNSTopic
   iam:
     role:
       statements:
@@ -31,6 +43,10 @@ provider:
             - 'dynamodb:Query'
             - 'dynamodb:PutItem'
           Resource: 'arn:aws:dynamodb:us-east-1:261414472581:table/${self:provider.environment.STOCKS_DB_NAME}'
+        - Effect: Allow
+          Action: 'sns:*'
+          Resource: 
+            Ref: SNSTopic
 
 custom:
   stage: ${opt:stage, self:provider.stage}
@@ -40,11 +56,11 @@ custom:
     dev: ${ssm(us-east-1):/dev/STOCKS_DB_NAME}
 
 functions:
-  getProducts:
-    handler: handler.getProductsList
+  createProduct:
+    handler: handler.createProduct
     events:
       - httpApi:
-          method: GET
+          method: POST
           path: /products
   getProductsById:
     handler: handler.getProductsById
@@ -52,9 +68,39 @@ functions:
       - httpApi:
           method: GET
           path: /products/{productId}
-  createProduct:
-    handler: handler.createProduct
+  getProducts:
+    handler: handler.getProductsList
     events:
       - httpApi:
-          method: POST
+          method: GET
           path: /products
+
+resources:
+  Resources:
+    SNSTopic:
+        Type: AWS::SNS::Topic
+        Properties:
+          DisplayName: 'Captures event of created products'
+          TopicName: createProductTopic
+    SNSSubscription:
+        Type: AWS::SNS::Subscription
+        Properties:
+          Endpoint: artsiom_baravik@epam.com
+          Protocol: email
+          FilterPolicyScope: MessageAttributes
+          FilterPolicy:
+            notify:
+              - 'true'
+          TopicArn:
+            Ref: SNSTopic
+    SNSSubscription2:
+            Type: AWS::SNS::Subscription
+            Properties:
+              Endpoint: artem.borovik.by@gmail.com
+              Protocol: email
+              FilterPolicyScope: MessageAttributes
+              FilterPolicy:
+                notify:
+                  - 'false'
+              TopicArn:
+                Ref: SNSTopic

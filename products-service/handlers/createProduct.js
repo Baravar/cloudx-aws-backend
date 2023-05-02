@@ -43,7 +43,7 @@ export const createProduct = async event => {
 
     const stocksItemPayload = {
       product_id: uniqueProductId,
-      count: payloadData.count || 0
+      count: Number(payloadData.count) || 0
     };
 
     try {
