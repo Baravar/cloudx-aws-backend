@@ -1,0 +1,21 @@
+service: cloudx-authorization-service
+
+frameworkVersion: '3'
+
+useDotenv: true
+
+# Add the serverless-webpack plugin
+plugins:
+  - serverless-webpack
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  stage: dev
+  region: us-east-1
+  environment:
+    AUTH_TOKEN: ${env:baravar}
+
+functions:
+  basicAuthorizer:
+    handler: handler.basicAuthorizer

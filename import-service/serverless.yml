@@ -13,6 +13,10 @@ provider:
   region: us-east-1
   httpApi:
     cors: true
+    authorizers:
+      basicAuthorizer:
+        type: request
+        functionArn: arn:aws:lambda:us-east-1:261414472581:function:cloudx-authorization-service-dev-basicAuthorizer
   iam:
     role:
       statements:
@@ -38,10 +42,8 @@ functions:
       - httpApi:
           method: get
           path: /import
-          request:
-            parameters:
-              querystrings:
-                url: true
+          authorizer:
+            name: basicAuthorizer
   processProductsFile:
     handler: handler.processProductsFile
     events:

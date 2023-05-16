@@ -5,6 +5,7 @@ coverage
 
 # Serverless directories
 .serverless
+.env
 
 # Webpack directories
 .webpack
